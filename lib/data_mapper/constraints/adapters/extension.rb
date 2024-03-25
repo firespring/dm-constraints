@@ -25,25 +25,21 @@ module DataMapper
           # This means that the adapter in use doesn't support constraints
         end
 
-      private
-
         # @api private
-        def constraint_extensions(const_name)
+        private def constraint_extensions(const_name)
           name = adapter_name(const_name)
           name = 'do' if name == 'dataobjects'
           "data_mapper/constraints/adapters/#{name}_adapter"
         end
 
         # @api private
-        def const_added(const_name)
+        private def const_added(const_name)
           include_constraint_api(const_name)
           super
         end
-
-      end # module Extension
-    end # module Adapters
-  end # module Constraints
+      end
+    end
+  end
 
   Adapters.extend Constraints::Adapters::Extension
-
-end # module DataMapper
+end

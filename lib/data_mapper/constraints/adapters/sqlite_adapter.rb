@@ -1,9 +1,7 @@
 module DataMapper
   module Constraints
     module Adapters
-
       module SqliteAdapter
-
         # @api private
         def constraint_exists?(*)
           false
@@ -18,9 +16,7 @@ module DataMapper
         def destroy_relationship_constraint(*)
           false
         end
-
       end
-
     end
   end
 end

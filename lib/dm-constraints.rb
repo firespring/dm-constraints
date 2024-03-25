@@ -14,6 +14,6 @@ require 'data_mapper/constraints/adapters/abstract_adapter'
 
 module DataMapper
   module Constraints
-    VALID_CONSTRAINT_VALUES = [ :protect, :destroy, :destroy!, :set_nil, :skip ].to_set.freeze
+    VALID_CONSTRAINT_VALUES = %i(protect destroy destroy! set_nil skip).to_set.freeze
   end
 end

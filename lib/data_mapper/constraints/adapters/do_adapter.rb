@@ -1,7 +1,6 @@
 module DataMapper
   module Constraints
     module Adapters
-
       module DataObjectsAdapter
         ##
         # Determine if a constraint exists for a table
@@ -66,7 +65,8 @@ module DataMapper
             source_storage_name,
             source_keys,
             target_storage_name,
-            target_keys)
+            target_keys
+          )
 
           execute(create_constraints_statement)
         end
@@ -95,8 +95,6 @@ module DataMapper
           execute(destroy_constraints_statement)
         end
 
-      private
-
         ##
         # Check to see if the relationship's constraints can be used
         #
@@ -111,17 +109,15 @@ module DataMapper
         #   true if a constraint can be established for relationship
         #
         # @api private
-        def valid_relationship_for_constraint?(relationship)
+        private def valid_relationship_for_constraint?(relationship)
           return false unless relationship.source_repository_name == name || relationship.source_repository_name.nil?
           return false unless relationship.target_repository_name == name || relationship.target_repository_name.nil?
-          return false unless relationship.kind_of?(Associations::ManyToOne::Relationship)
+          return false unless relationship.is_a?(Associations::ManyToOne::Relationship)
+
           true
         end
 
         module SQL
-
-        private
-
           # Generates the SQL statement to create a constraint
           #
           # @param [String] constraint_name
@@ -141,7 +137,7 @@ module DataMapper
           #   SQL DDL Statement to create a constraint
           #
           # @api private
-          def create_constraints_statement(constraint_name, constraint_type, source_storage_name, source_keys, target_storage_name, target_keys)
+          private def create_constraints_statement(constraint_name, constraint_type, source_storage_name, source_keys, target_storage_name, target_keys)
             DataMapper::Ext::String.compress_lines(<<-SQL)
               ALTER TABLE #{quote_name(source_storage_name)}
               ADD CONSTRAINT #{quote_name(constraint_name)}
@@ -164,7 +160,7 @@ module DataMapper
           #   SQL DDL Statement to destroy a constraint
           #
           # @api private
-          def destroy_constraints_statement(storage_name, constraint_name)
+          private def destroy_constraints_statement(storage_name, constraint_name)
             DataMapper::Ext::String.compress_lines(<<-SQL)
               ALTER TABLE #{quote_name(storage_name)}
               DROP CONSTRAINT #{quote_name(constraint_name)}
@@ -183,16 +179,14 @@ module DataMapper
           #   name of the constraint
           #
           # @api private
-          def constraint_name(storage_name, relationship_name)
+          private def constraint_name(storage_name, relationship_name)
             identifier = "#{storage_name}_#{relationship_name}"[0, self.class::IDENTIFIER_MAX_LENGTH - 3]
             "#{identifier}_fk"
           end
         end
 
         include SQL
-
-      end # module DataObjectsAdapter
-
-    end # module Adapters
-  end # module Constraints
-end # module DataMapper
+      end
+    end
+  end
+end

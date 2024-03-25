@@ -6,8 +6,6 @@ module DataMapper
         super
       end
 
-    private
-
       # Check delete constraints prior to destroying a dm resource or collection
       #
       # @note
@@ -17,7 +15,7 @@ module DataMapper
       # @return [nil]
       #
       # @api semi-public
-      def enforce_destroy_constraints
+      private def enforce_destroy_constraints
         relationships.each do |relationship|
           next unless relationship.respond_to?(:enforce_destroy_constraint)
 
@@ -26,9 +24,7 @@ module DataMapper
           throw(:halt, false) unless constraint_satisfied
         end
       end
-
-    end # module Resource
-  end # module Constraints
-
+    end
+  end
   Model.append_inclusions Constraints::Resource
-end # module DataMapper
+end

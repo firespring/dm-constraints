@@ -5,10 +5,8 @@ module DataMapper
     module Relationship
       module ManyToMany
 
-      private
-
-        def one_to_many_options
-          super.merge(:constraint => @constraint)
+        private def one_to_many_options
+          super.merge(constraint: @constraint)
         end
 
         # Checks that the constraint type is appropriate to the relationship
@@ -29,22 +27,22 @@ module DataMapper
         # @return [Undefined]
         #
         # @api private
-        def assert_valid_constraint
+        private def assert_valid_constraint
           super
 
           # TODO: is any constraint valid for a m:m relationship?
-          if @constraint == :set_nil
-            raise ArgumentError, "#{@constraint} is not a valid constraint type for #{self.class}"
-          end
+          return unless @constraint == :set_nil
+
+          raise ArgumentError, "#{@constraint} is not a valid constraint type for #{self.class}"
         end
 
-      end # module ManyToMany
-    end # module Relationship
-  end # module Constraints
+      end
+    end
+  end
 
   Associations::ManyToMany::Relationship::OPTIONS << :constraint
 
   Associations::ManyToMany::Relationship.class_eval do
     include Constraints::Relationship::ManyToMany
   end
-end # module DataMapper
+end

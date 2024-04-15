@@ -3,7 +3,6 @@ require 'data_mapper/constraints/adapters/do_adapter'
 module DataMapper
   module Constraints
     module Adapters
-
       module OracleAdapter
         include DataObjectsAdapter
 
@@ -22,9 +21,7 @@ module DataMapper
           SQL
 
           select(statement, oracle_upcase(storage_name)[0, self.class::IDENTIFIER_MAX_LENGTH].gsub('"', '_'), oracle_upcase(constraint_name)[0, self.class::IDENTIFIER_MAX_LENGTH].gsub('"', '_')).first > 0
-
         end
-
 
         # @see DataMapper::Constraints::Adapters::DataObjectsAdapter#create_constraints_statement
         #
@@ -37,7 +34,7 @@ module DataMapper
             ADD CONSTRAINT #{quote_name(constraint_name)}
             FOREIGN KEY (#{source_keys.join(', ')})
             REFERENCES #{quote_name(target_storage_name)} (#{target_keys.join(', ')})
-            #{"ON DELETE " + constraint_type if constraint_type && constraint_type != "NO ACTION"}
+            #{"ON DELETE #{constraint_type}" if constraint_type && constraint_type != 'NO ACTION'}
             INITIALLY DEFERRED DEFERRABLE
           SQL
         end
@@ -50,7 +47,6 @@ module DataMapper
             CASCADE
           SQL
         end
-
       end
     end
   end

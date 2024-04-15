@@ -1,10 +1,9 @@
-require "data_mapper/constraints/adapters/extension"
+require 'data_mapper/constraints/adapters/extension'
 
 module DataMapper
   module Constraints
     module Adapters
       module AbstractAdapter
-
         # @api private
         def constraint_exists?(*)
           false
@@ -19,10 +18,9 @@ module DataMapper
         def destroy_relationship_constraint(*)
           false
         end
-
-      end # module AbstractAdapter
-    end # module Adapters
-  end # module Constraints
+      end
+    end
+  end
 
   Adapters::AbstractAdapter.class_eval do
     include Constraints::Adapters::AbstractAdapter
@@ -32,5 +30,4 @@ module DataMapper
     const_name = DataMapper::Inflector.demodulize(adapter_class.name)
     Adapters.include_constraint_api(const_name)
   end
-
-end # module DataMapper
+end

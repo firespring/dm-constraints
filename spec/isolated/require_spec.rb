@@ -1,5 +1,4 @@
-shared_examples_for "require 'dm-constraints'" do
-
+shared_examples "require 'dm-constraints'" do
   it "extends Model descendants with the constraint API" do
     DataMapper::Model.descendants.should_not be_empty
     DataMapper::Model.descendants.all? do |model|
@@ -13,5 +12,4 @@ shared_examples_for "require 'dm-constraints'" do
     @adapter.respond_to?(:create_relationship_constraint ).should be(true)
     @adapter.respond_to?(:destroy_relationship_constraint).should be(true)
   end
-
 end

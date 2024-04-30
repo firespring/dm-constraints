@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
   supported_by :all do

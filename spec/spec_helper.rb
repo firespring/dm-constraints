@@ -7,8 +7,7 @@ require 'dm-core/spec/lib/pending_helpers'
 
 require 'dm-constraints'
 
-Spec::Runner.configure do |config|
-
+RSpec.configure do |config|
   config.extend(DataMapper::Spec::Adapters::Helpers)
   config.extend(DataMapper::Spec::Helpers)
   config.include(DataMapper::Spec::PendingHelpers)
@@ -25,5 +24,4 @@ Spec::Runner.configure do |config|
   config.after :all do
     DataMapper::Spec.cleanup_models
   end
-
 end

@@ -1,4 +1,5 @@
 --colour
 --order rand
---format profile
+--format documentation
+--profile
 --backtrace

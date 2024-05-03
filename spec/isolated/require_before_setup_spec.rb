@@ -1,4 +1,3 @@
-require 'backports'
 require 'rspec'
 
 require_relative 'require_spec'

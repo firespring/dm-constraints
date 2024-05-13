@@ -32,5 +32,5 @@ describe "require 'dm-constraints' after calling DataMapper.setup" do
 
   end
 
-  it_should_behave_like "require 'dm-constraints'"
+  it_behaves_like "require 'dm-constraints'"
 end

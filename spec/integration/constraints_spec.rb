@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
   supported_by :all do
@@ -66,25 +66,25 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
         end
       end
 
-      it 'should be able to create related objects with a foreign key constraint' do
+      it 'is able to create related objects with a foreign key constraint' do
         @article = Article.create(:title => 'Man on the Moon')
         @comment = @article.comments.create(:body => 'So true!')
       end
 
-      it 'should be able to create related objects with a composite foreign key constraint' do
+      it 'is able to create related objects with a composite foreign key constraint' do
         @author  = Author.create(:first_name => 'John', :last_name => 'Doe')
         @comment = @author.comments.create(:body => 'So true!')
       end
 
       supported_by :postgres, :mysql do
-        it 'should not be able to create related objects with a failing foreign key constraint' do
+        it 'is not be able to create related objects with a failing foreign key constraint' do
           jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
-          pending_if 'JRuby throws a DataObjects::SQLError for integrity errors, which is wrong', jruby do
-            article = Article.create(:title => 'Man on the Moon')
-            lambda {
-              Comment.create(:body => 'So true!', :article_id => article.id + 1)
-            }.should raise_error(DataObjects::IntegrityError)
-          end
+          pending 'JRuby throws a DataObjects::SQLError for integrity errors, which is wrong' if jruby
+
+          article = Article.create(:title => 'Man on the Moon')
+          expect {
+            Comment.create(:body => 'So true!', :article_id => article.id + 1)
+          }.to raise_error(DataObjects::IntegrityError)
         end
       end
     end
@@ -96,14 +96,14 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
         @revision      = Revision.create(:text => 'Riveting!', :article => @other_article)
       end
 
-      it 'should destroy the parent if there are no children in the association' do
-        @article.destroy.should be(true)
-        @article.model.get(*@article.key).should be_nil
+      it 'destroys the parent if there are no children in the association' do
+        expect(@article.destroy).to be(true)
+        expect(@article.model.get(*@article.key)).to be_nil
       end
 
-      it 'the child should be destroyable' do
-        @revision.destroy.should be(true)
-        @revision.model.get(*@revision.key).should be_nil
+      it 'the child is destroyable' do
+        expect(@revision.destroy).to be(true)
+        expect(@revision.model.get(*@revision.key)).to be_nil
       end
     end
 
@@ -116,14 +116,14 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
           @comment      = @other_author.comments.create(:body => 'So true!', :article => @article)
         end
 
-        it 'should destroy the parent if there are no children in the association' do
-          @author.destroy.should be(true)
-          @author.model.get(*@author.key).should be_nil
+        it 'destroys the parent if there are no children in the association' do
+          expect(@author.destroy).to be(true)
+          expect(@author.model.get(*@author.key)).to be_nil
         end
 
-        it 'should not destroy the parent if there are children in the association' do
-          @other_author.destroy.should be(false)
-          @other_author.model.get(*@other_author.key).should_not be_nil
+        it 'does not destroy the parent if there are children in the association' do
+          expect(@other_author.destroy).to be(false)
+          expect(@other_author.model.get(*@other_author.key)).not_to be_nil
         end
       end
 
@@ -156,14 +156,14 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             @revision = Revision.create(:text => 'Riveting!', :article => @article)
           end
 
-          it 'should not destroy the parent if there are children in the association' do
-            @article.destroy.should be(false)
-            @article.model.get(*@article.key).should_not be_nil
+          it 'does not destroy the parent if there are children in the association' do
+            expect(@article.destroy).to be(false)
+            expect(@article.model.get(*@article.key)).not_to be_nil
           end
 
-          it 'the child should be destroyable' do
-            @revision.destroy.should be(true)
-            @revision.model.get(*@revision.key).should be_nil
+          it 'the child is destroyable' do
+            expect(@revision.destroy).to be(true)
+            expect(@revision.model.get(*@revision.key)).to be_nil
           end
         end
 
@@ -175,18 +175,18 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             @comment        = @another_author.comments.create(:body => 'So true!', :article => @article)
           end
 
-          it 'should destroy the parent if there are no children in the association' do
-            @author.destroy.should be(true)
-            @author.model.get(*@author.key).should be_nil
+          it 'destroys the parent if there are no children in the association' do
+            expect(@author.destroy).to be(true)
+            expect(@author.model.get(*@author.key)).to be_nil
           end
 
-          it 'should not destroy the parent if there are children in the association' do
-            @another_author.destroy.should be(false)
+          it 'does not destroy the parent if there are children in the association' do
+            expect(@another_author.destroy).to be(false)
           end
 
-          it 'the child should be destroyable' do
-            @comment.destroy.should be(true)
-            @comment.model.get(*@comment.key).should be_nil
+          it 'the child is destroyable' do
+            expect(@comment.destroy).to be(true)
+            expect(@comment.model.get(*@comment.key)).to be_nil
           end
         end
 
@@ -201,20 +201,20 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             @article        = Article.create(:title => 'Man on the Moon', :authors => [ @author ])
           end
 
-          it 'should destroy the parent if there are no children in the association' do
-            @another_author.destroy.should be(true)
-            @another_author.model.get(*@another_author.key).should be_nil
+          it 'destroys the parent if there are no children in the association' do
+            expect(@another_author.destroy).to be(true)
+            expect(@another_author.model.get(*@another_author.key)).to be_nil
           end
 
-          it 'should not destroy the parent if there are children in the association' do
-            @author.articles.should_not == []
-            @author.destroy.should be(false)
+          it 'does not destroy the parent if there are children in the association' do
+            expect(@author.articles).not_to eq []
+            expect(@author.destroy).to be(false)
           end
 
-          it 'the child should be destroyable' do
+          it 'the child is be destroyable' do
             @article.authors.clear
-            @article.save.should be(true)
-            @article.authors.should be_empty
+            expect(@article.save).to be(true)
+            expect(@article.authors).to be_empty
           end
         end
       end
@@ -248,20 +248,20 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             @revision = Revision.create(:text => 'Riveting!', :article => @article)
           end
 
-          it 'should let the parent to be destroyed' do
-            @article.destroy.should be(true)
-            @article.model.get(*@article.key).should be_nil
+          it 'lets the parent to be destroyed' do
+            expect(@article.destroy).to be(true)
+            expect(@article.model.get(*@article.key)).to be_nil
           end
 
-          it 'should destroy the children' do
+          it 'destroys the children' do
             revision = @article.revision
-            @article.destroy.should be(true)
-            revision.model.get(*revision.key).should be_nil
+            expect(@article.destroy).to be(true)
+            expect(revision.model.get(*revision.key)).to be_nil
           end
 
-          it 'the child should be destroyable' do
-            @revision.destroy.should be(true)
-            @revision.model.get(*@revision.key).should be_nil
+          it 'the child is destroyable' do
+            expect(@revision.destroy).to be(true)
+            expect(@revision.model.get(*@revision.key)).to be_nil
           end
         end
 
@@ -273,19 +273,19 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             @another_comment = @author.comments.create(:body => 'Nice comment', :article => @article)
           end
 
-          it 'should let the parent to be destroyed' do
-            @author.destroy.should be(true)
-            @author.model.get(*@author.key).should be_nil
+          it 'lets the parent to be destroyed' do
+            expect(@author.destroy).to be(true)
+            expect(@author.model.get(*@author.key)).to be_nil
           end
 
-          it 'should destroy the children' do
-            @author.destroy.should be(true)
-            @author.comments.all? { |comment| comment.should be_new }
+          it 'destroys the children' do
+            expect(@author.destroy).to be(true)
+            @author.comments.all? { |comment| expect(comment).to be_new }
           end
 
-          it 'the child should be destroyable' do
-            @comment.destroy.should be(true)
-            @comment.model.get(*@comment.key).should be_nil
+          it 'the child is destroyable' do
+            expect(@comment.destroy).to be(true)
+            expect(@comment.model.get(*@comment.key)).to be_nil
           end
         end
 
@@ -300,20 +300,20 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             @author        = Author.create(:first_name => 'John', :last_name => 'Doe', :articles => [ @article, @other_article ])
           end
 
-          it 'should let the parent to be destroyed' do
-            @author.destroy.should be(true)
-            @author.model.get(*@author.key).should be_nil
+          it 'lets the parent to be destroyed' do
+            expect(@author.destroy).to be(true)
+            expect(@author.model.get(*@author.key)).to be_nil
           end
 
-          it 'should destroy the children' do
-            @author.destroy.should be(true)
-            @article.model.get(*@article.key).should be_nil
-            @other_article.model.get(*@other_article.key).should be_nil
+          it 'destroys the children' do
+            expect(@author.destroy).to be(true)
+            expect(@article.model.get(*@article.key)).to be_nil
+            expect(@other_article.model.get(*@other_article.key)).to be_nil
           end
 
-          it 'the child should be destroyable' do
-            @article.destroy.should be(true)
-            @article.model.get(*@article.key).should be_nil
+          it 'the child is destroyable' do
+            expect(@article.destroy).to be(true)
+            expect(@article.model.get(*@article.key)).to be_nil
           end
         end
       end
@@ -347,20 +347,20 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             @revision = Revision.create(:text => 'Riveting!', :article => @article)
           end
 
-          it 'should let the parent to be destroyed' do
-            @article.destroy.should be(true)
-            @article.model.get(*@article.key).should be_nil
+          it 'lets the parent to be destroyed' do
+            expect(@article.destroy).to be(true)
+            expect(@article.model.get(*@article.key)).to be_nil
           end
 
-          it 'should destroy the children' do
+          it 'destroys the children' do
             revision = @article.revision
-            @article.destroy.should be(true)
-            revision.model.get(*revision.key).should be_nil
+            expect(@article.destroy).to be(true)
+            expect(revision.model.get(*revision.key)).to be_nil
           end
 
-          it 'the child should be destroyable' do
-            @revision.destroy.should be(true)
-            @revision.model.get(*@revision.key).should be_nil
+          it 'the child is destroyable' do
+            expect(@revision.destroy).to be(true)
+            expect(@revision.model.get(*@revision.key)).to be_nil
           end
         end
 
@@ -372,19 +372,19 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             @other_comment = @author.comments.create(:body => "That's nonsense", :article => @article)
           end
 
-          it 'should let the parent to be destroyed' do
-            @author.destroy.should be(true)
-            @author.model.get(*@author.key).should be_nil
+          it 'lets the parent to be destroyed' do
+            expect(@author.destroy).to be(true)
+            expect(@author.model.get(*@author.key)).to be_nil
           end
 
-          it 'should destroy the children' do
-            @author.destroy.should be(true)
-            @author.comments.all? { |comment| comment.should be_new }
+          it 'destroys the children' do
+            expect(@author.destroy).to be(true)
+            @author.comments.all? { |comment| expect(comment).to be_new }
           end
 
-          it 'the child should be destroyable' do
-            @comment.destroy.should be(true)
-            @comment.model.get(*@comment.key).should be_nil
+          it 'the child is destroyable' do
+            expect(@comment.destroy).to be(true)
+            expect(@comment.model.get(*@comment.key)).to be_nil
           end
         end
 
@@ -399,17 +399,17 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             @author        = Author.create(:first_name => 'John', :last_name => 'Doe', :articles => [ @article, @other_article ])
           end
 
-          it 'should destroy the parent and the children, too' do
-            @author.destroy.should be(true)
-            @author.model.get(*@author.key).should be_nil
+          it 'destroys the parent and the children, too' do
+            expect(@author.destroy).to be(true)
+            expect(@author.model.get(*@author.key)).to be_nil
 
-            @article.model.get(*@article.key).should be_nil
-            @other_article.model.get(*@other_article.key).should be_nil
+            expect(@article.model.get(*@article.key)).to be_nil
+            expect(@other_article.model.get(*@other_article.key)).to be_nil
           end
 
-          it 'the child should be destroyable' do
-            @article.destroy.should be(true)
-            @article.model.get(*@article.key).should be_nil
+          it 'the child is destroyable' do
+            expect(@article.destroy).to be(true)
+            expect(@article.model.get(*@article.key)).to be_nil
           end
         end
       end
@@ -444,21 +444,21 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             @revision = Revision.create(:text => 'Riveting!', :article => @article)
           end
 
-          it 'should let the parent to be destroyed' do
-            @article.destroy.should be(true)
-            @article.model.get(*@article.key).should be_nil
+          it 'lets the parent to be destroyed' do
+            expect(@article.destroy).to be(true)
+            expect(@article.model.get(*@article.key)).to be_nil
           end
 
-          it "should set the child's foreign_key id to nil" do
+          it "sets the child's foreign_key id to nil" do
             revision = @article.revision
-            @article.destroy.should be(true)
-            revision.article.should be_nil
-            revision.model.get(*revision.key).article.should be_nil
+            expect(@article.destroy).to be(true)
+            expect(revision.article).to be_nil
+            expect(revision.model.get(*revision.key).article).to be_nil
           end
 
-          it 'the child should be destroyable' do
-            @revision.destroy.should be(true)
-            @revision.model.get(*@revision.key).should be_nil
+          it 'the child is destroyable' do
+            expect(@revision.destroy).to be(true)
+            expect(@revision.model.get(*@revision.key)).to be_nil
           end
         end
 
@@ -469,22 +469,22 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             @other_comment = @author.comments.create(:body => "That's nonsense")
           end
 
-          it 'should let the parent to be destroyed' do
-            @author.destroy.should be(true)
-            @author.model.get(*@author.key).should be_nil
+          it 'lets the parent be destroyed' do
+            expect(@author.destroy).to be(true)
+            expect(@author.model.get(*@author.key)).to be_nil
           end
 
-          it 'should set the foreign_key ids of children to nil' do
-            @author.destroy.should be(true)
-            @author.comments.all? { |comment| comment.author.should be_nil }
+          it 'sets the foreign_key ids of children to nil' do
+            expect(@author.destroy).to be(true)
+            @author.comments.all? { |comment| expect(comment.author).to be_nil }
           end
 
-          it 'the children should be destroyable' do
-            @comment.destroy.should be(true)
-            @comment.model.get(*@comment.key).should be_nil
+          it 'the children are destroyable' do
+            expect(@comment.destroy).to be(true)
+            expect(@comment.model.get(*@comment.key)).to be_nil
 
-            @other_comment.destroy.should be(true)
-            @other_comment.model.get(*@other_comment.key).should be_nil
+            expect(@other_comment.destroy).to be(true)
+            expect(@other_comment.model.get(*@other_comment.key)).to be_nil
           end
         end
       end
@@ -518,19 +518,19 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             @revision = Revision.create(:text => 'Riveting!', :article => @article)
           end
 
-          it 'should let the parent be destroyed' do
-            @article.destroy.should be(true)
-            @article.model.get(*@article.key).should be_nil
+          it 'lets the parent be destroyed' do
+            expect(@article.destroy).to be(true)
+            expect(@article.model.get(*@article.key)).to be_nil
           end
 
-          it 'should let the children become orphan records' do
-            @article.destroy.should be(true)
-            @revision.model.get(*@revision.key).article.should be_nil
+          it 'lets the children become orphan records' do
+            expect(@article.destroy).to be(true)
+            expect(@revision.model.get(*@revision.key).article).to be_nil
           end
 
-          it 'the child should be destroyable' do
-            @revision.destroy.should be(true)
-            @revision.model.get(*@revision.key).should be_nil
+          it 'the child is destroyable' do
+            expect(@revision.destroy).to be(true)
+            expect(@revision.model.get(*@revision.key)).to be_nil
           end
         end
 
@@ -542,21 +542,21 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             @other_comment = @author.comments.create(:body => "That's nonsense", :article => @article)
           end
 
-          it 'should let the parent to be destroyed' do
-            @author.destroy.should be(true)
-            @author.model.get(*@author.key).should be_nil
+          it 'lets the parent be destroyed' do
+            expect(@author.destroy).to be(true)
+            expect(@author.model.get(*@author.key)).to be_nil
           end
 
-          it 'should let the children become orphan records' do
-            @author.destroy.should be(true)
-            @comment.model.get(*@comment.key).author.should be_nil
-            @other_comment.model.get(*@other_comment.key).author.should be_nil
+          it 'lets the children become orphan records' do
+            expect(@author.destroy).to be(true)
+            expect(@comment.model.get(*@comment.key).author).to be_nil
+            expect(@other_comment.model.get(*@other_comment.key).author).to be_nil
           end
 
-          it 'the children should be destroyable' do
-            @comment.destroy.should be(true)
-            @other_comment.destroy.should be(true)
-            @other_comment.model.get(*@other_comment.key).should be_nil
+          it 'the children are destroyable' do
+            expect(@comment.destroy).to be(true)
+            expect(@other_comment.destroy).to be(true)
+            expect(@other_comment.model.get(*@other_comment.key)).to be_nil
           end
         end
 
@@ -571,9 +571,9 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             @author        = Author.create(:first_name => 'John', :last_name => 'Doe', :articles => [ @article, @other_article ])
           end
 
-          it 'the children should be destroyable' do
-            @article.destroy.should be(true)
-            @article.model.get(*@article.key).should be_nil
+          it 'the children are be destroyable' do
+            expect(@article.destroy).to be(true)
+            expect(@article.model.get(*@article.key)).to be_nil
           end
         end
       end
@@ -584,7 +584,7 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
         # Setting a portion of this primary key is not possible for two reasons:
         # 1. the columns are defined as :required => true
         # 2. there could be duplicate rows if more than one of either of the types
-        #   was deleted while being associated to the same type on the other side of the relationshp
+        #   was deleted while being associated to the same type on the other side of the relationship
         #   Given
         #   Author(name: John Doe, ID: 1) =>
         #       Articles[Article(title: Man on the Moon, ID: 1), Article(title: Dolly cloned, ID: 2)]
@@ -605,8 +605,8 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
         #
         #   I would suggest setting :constraint to :skip in this scenario which will leave
         #     you with orphaned rows.
-        it 'should raise an error if :set_nil is given for a M:M relationship' do
-          lambda {
+        it 'raises an error if :set_nil is given for a M:M relationship' do
+          expect {
             class ::Article
               has n, :authors, :through => Resource, :constraint => :set_nil
             end
@@ -614,15 +614,15 @@ describe 'DataMapper::Constraints', "(with #{DataMapper::Spec.adapter_name})" do
             class ::Author
               has n, :articles, :through => Resource, :constraint => :set_nil
             end
-          }.should raise_error(ArgumentError)
+          }.to raise_error(ArgumentError)
         end
 
-        it 'should raise an error if an unknown type is given' do
-          lambda do
+        it 'raises an error if an unknown type is given' do
+          expect do
             class ::Author
               has n, :articles, :constraint => :chocolate
             end
-          end.should raise_error(ArgumentError)
+          end.to raise_error(ArgumentError)
         end
       end
     end

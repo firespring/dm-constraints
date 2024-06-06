@@ -19,7 +19,6 @@ gem 'dm-core', DM_VERSION, options.dup
 
 platforms :mri_18 do
   group :quality do
-    gem 'rcov'
     gem 'yard'
     gem 'yardstick'
   end
@@ -29,6 +28,7 @@ end
 group :development do
   gem 'rake'
   gem 'rspec'
+  gem 'simplecov'
 end
 
 group :datamapper do

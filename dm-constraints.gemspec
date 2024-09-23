@@ -17,5 +17,5 @@ Gem::Specification.new do |gem|
   gem.version       = DataMapper::Constraints::VERSION
   gem.required_ruby_version = '>= 2.7.8'
 
-  gem.add_runtime_dependency('dm-core', '~> 1.3.0.beta')
+  gem.add_runtime_dependency('sbf-dm-core', '~> 1.3.0.beta')
 end
